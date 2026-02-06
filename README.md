@@ -6,10 +6,24 @@ A skill for invoking Claude Code programmatically from OpenClaw for coding tasks
 
 ## ⚠️ IMPORTANT: Project Directory Rule
 
-**ALL projects developed with Claude Code MUST be created in the workspace directory:**
+**ALL projects developed with Claude Code MUST be created in your OpenClaw workspace directory.**
 
+### How to Get Your Workspace Path
+
+**Method 1: Using OpenClaw CLI (Recommended ⭐)**
+```bash
+openclaw config get agents.defaults.workspace
 ```
-/Users/apple/.openclaw/workspace/
+
+**Method 2: Quick Navigation Script**
+```bash
+# Add to ~/.zshrc or ~/.bashrc
+alias cw='cd $(openclaw config get agents.defaults.workspace)'
+
+# Then use:
+cw  # Navigate to workspace
+mkdir my-new-project
+cd my-new-project
 ```
 
 ### Why This Rule Exists
@@ -22,7 +36,7 @@ A skill for invoking Claude Code programmatically from OpenClaw for coding tasks
 
 **✅ CORRECT:**
 ```bash
-cd ~/.openclaw/workspace
+cd $(openclaw config get agents.defaults.workspace)
 mkdir project-name
 cd project-name
 # Develop project here

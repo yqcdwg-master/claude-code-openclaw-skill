@@ -32,10 +32,30 @@ First-time use requires login: `claude`
 
 ## ⭐ CRITICAL: Working Directory Rule
 
-**ALL projects developed with Claude Code MUST be created in the OpenClaw workspace directory:**
+**ALL projects developed with Claude Code MUST be created in the OpenClaw workspace directory.**
 
+### How to Get Your Workspace Path
+
+**Method 1: Using OpenClaw CLI (Recommended ⭐)**
 ```bash
-~/.openclaw/workspace/
+# Get workspace path from configuration
+openclaw config get agents.defaults.workspace
+
+# Example output:
+# /Users/apple/code/AIWorkspace
+```
+
+**Method 2: Using Environment Variable**
+```bash
+# Set and use workspace
+WORKSPACE=$(openclaw config get agents.defaults.workspace)
+cd $WORKSPACE
+```
+
+**Method 3: Direct Configuration Lookup**
+```bash
+# Check openclaw.json
+cat ~/.openclaw/openclaw.json | grep '"workspace"'
 ```
 
 ### Why This Rule Exists
@@ -48,30 +68,50 @@ First-time use requires login: `claude`
 
 **✅ CORRECT:**
 ```bash
-# Navigate to workspace first
-cd ~/.openclaw/workspace
+# Step 1: Get workspace path
+WORKSPACE=$(openclaw config get agents.defaults.workspace)
 
-# Create new project
+# Step 2: Navigate to workspace
+cd $WORKSPACE
+
+# Step 3: Create and enter project directory
 mkdir my-project
 cd my-project
 
-# Start development...
+# Step 4: Start development
 claude -p "Create a login page"
 ```
 
 **❌ INCORRECT:**
 ```bash
-# Never create projects outside workspace
+# Never hardcode paths
+cd /Users/apple/code/AIWorkspace  # Hardcoded - NOT recommended
+mkdir my-project
+
+# Or use wrong location
 cd ~/Projects
 mkdir my-project  # WRONG LOCATION!
-cd my-project
-claude -p "Create a login page"  # Will create files in wrong place
+```
+
+### Quick Reference Script
+
+Create a helper script to automatically navigate to workspace:
+
+```bash
+# Add to your ~/.zshrc or ~/.bashrc
+alias cw='cd $(openclaw config get agents.defaults.workspace)'
+
+# Then use:
+cw  # Navigate to workspace
+mkdir my-new-project
+cd my-new-project
 ```
 
 ### Project Structure Template
 
 ```
-~/.openclaw/workspace/
+# Your workspace (dynamic from config)
+$(openclaw config get agents.defaults.workspace)/
 └── project-name/
     ├── index.html          # Main HTML
     ├── styles.css          # All styles
@@ -90,7 +130,7 @@ claude -p "Create a login page"  # Will create files in wrong place
 
 **Creating a new web project:**
 ```bash
-cd ~/.openclaw/workspace
+cd $(openclaw config get agents.defaults.workspace)
 mkdir my-website
 cd my-website
 claude -p "Create a responsive landing page with modern design"
@@ -98,7 +138,7 @@ claude -p "Create a responsive landing page with modern design"
 
 **Creating a new skill:**
 ```bash
-cd ~/.openclaw/workspace
+cd $(openclaw config get agents.defaults.workspace)
 mkdir my-skill
 cd my-skill
 # Initialize spec-kit
@@ -108,21 +148,28 @@ claude -p "Create skill structure with README, SKILL.md, and examples"
 
 **Creating an API project:**
 ```bash
-cd ~/.openclaw/workspace
+cd $(openclaw config get agents.defaults.workspace)
 mkdir my-api
 cd my-api
 claude -p "Build a REST API with Node.js and Express"
 ```
 
-### Legacy Projects
+### Legacy Projects Migration
 
-If you have existing projects outside `~/.openclaw/workspace/`, consider migrating them:
+If you have existing projects outside your workspace, migrate them:
 
 ```bash
-# Example migration
-cp -r ~/Projects/my-old-project ~/.openclaw/workspace/
-cd ~/.openclaw/workspace/my-old-project
-# Update any absolute paths in your code
+# Get workspace path
+WORKSPACE=$(openclaw config get agents.defaults.workspace)
+
+# Copy project to workspace
+cp -r ~/Projects/my-old-project $WORKSPACE/
+
+# Navigate and verify
+cd $WORKSPACE/my-old-project
+ls -la
+
+# Update any hardcoded paths in your code if needed
 ```
 
 ## ⚠️ IMPORTANT: Correct Usage Format
