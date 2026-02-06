@@ -1689,5 +1689,419 @@ gh repo view --json
 ---
 
 **Last Updated:** 2026-02-06
-**Version:** 2.3.0 (Added OpenSpec Alternative section)
+**Version:** 2.4.0 (Added OpenSpec Usage Tips & Best Practices)
 **Author:** Claude Code + OpenClaw
+
+---
+
+## OpenSpec Usage Tips & Best Practices ⭐
+
+Based on real project development experience (Todo List app, 2026-02-06).
+
+---
+
+### Quick Start Commands
+
+```bash
+# 1. Install OpenSpec (requires Node.js 20.19.0+)
+npm install -g @fission-ai/openspec@latest
+
+# 2. Initialize project
+cd your-project
+openspec init --tools claude
+
+# 3. Create new feature
+openspec new change feature-name --description "Feature description"
+
+# 4. List available commands
+openspec help
+
+# 5. Update AI instructions
+openspec update
+```
+
+---
+
+### Workflow Tips
+
+#### 1. Initialize with Correct Tools
+```bash
+# ✅ Correct - specify claude as tool
+openspec init --tools claude
+
+# ❌ Wrong - missing required --tools flag
+openspec init
+```
+
+#### 2. Use Descriptive Feature Names
+```bash
+# ✅ Good - kebab-case, descriptive
+openspec new change todo-list-app --description "Simple todo management"
+
+# ❌ Bad - unclear name
+openspec new change feature-1
+```
+
+#### 3. Always Update After Init
+```bash
+# ✅ Good practice
+openspec init --tools claude
+openspec update  # Refresh AI instructions
+
+# Why? Ensures latest slash commands are active
+```
+
+#### 4. Check Feature Status
+```bash
+# Before applying, check what's in the feature
+ls openspec/changes/feature-name/
+
+# View all changes
+openspec list
+```
+
+---
+
+### Document Structure Best Practices
+
+#### Required Documents
+
+**README.md** (Essential)
+```markdown
+# feature-name
+
+Brief description
+
+## Features Implemented
+- ✅ Feature 1
+- ✅ Feature 2
+
+## Technical Details
+- Technology stack
+- File structure
+- Key decisions
+
+## Usage
+How to use the feature
+
+## Created With
+- OpenSpec
+- Claude Code
+```
+
+**requirements.md** (Important)
+```markdown
+# Functional Requirements
+
+## FR-001: Feature Name
+**Priority**: P0 (Essential)
+
+- Requirement 1
+- Requirement 2
+
+## Non-Functional Requirements
+- Performance
+- Accessibility
+- Browser support
+```
+
+**scenarios.md** (User Stories)
+```markdown
+## Scenario 1: Description
+**User**: User type
+
+**Given** context
+**When** action
+**Then** expected outcome
+```
+
+**design.md** (Technical)
+```markdown
+# Technical Design
+
+## Architecture
+Component structure
+
+## Data Model
+TypeScript interfaces
+
+## Implementation Plan
+Step-by-step approach
+```
+
+**tasks.md** (Checklist)
+```markdown
+# Tasks
+
+## Task 1: Task Name
+**File**: filename
+
+### Subtasks
+- [ ] Subtask 1
+- [ ] Subtask 2
+
+**Status**: ✅ Complete
+```
+
+---
+
+### Project Structure Example
+
+```
+project/
+├── index.html          # Main file
+├── styles.css          # Styling
+├── script.js           # Logic
+└── openspec/
+    └── changes/
+        └── feature-name/
+            ├── README.md           # ✅ Required
+            ├── design.md           # ✅ Required
+            ├── specs/
+            │   ├── requirements.md # ✅ Required
+            │   └── scenarios.md    # ✅ Required
+            └── tasks.md           # ✅ Required
+```
+
+---
+
+### Real-World Workflow Example
+
+#### Project: Todo List App
+
+**Step 1: Create Feature**
+```bash
+cd todo-openspec
+openspec init --tools claude
+openspec new change todo-list-app --description "Simple todo management"
+```
+
+**Step 2: Create Documents**
+```bash
+# Edit files manually or with Claude Code
+claude -p "Create requirements.md for a todo list with add/edit/delete/complete features"
+
+claude -p "Create user scenarios.md with Gherkin-style Given/When/Then"
+
+claude -p "Create design.md with component structure and data model"
+
+claude -p "Create tasks.md with implementation checklist"
+```
+
+**Step 3: Implement**
+```bash
+# Create core files
+claude -p "Create index.html with semantic HTML structure"
+
+claude -p "Create styles.css with responsive design, CSS variables, and smooth animations"
+
+claude -p "Create script.js with TodoList class, localStorage persistence, and event handling"
+```
+
+**Step 4: Test & Verify**
+```bash
+# Manual testing checklist
+- [x] Add task (button + Enter)
+- [x] Complete task (checkbox)
+- [x] Delete task
+- [x] Edit task
+- [x] Filter tabs
+- [x] Persistence
+- [x] Mobile layout
+```
+
+**Step 5: Document**
+```bash
+# Update README.md with features, usage, and screenshots
+```
+
+---
+
+### Common Mistakes & Solutions
+
+#### Mistake 1: Wrong Tool Name
+```bash
+# ❌ Error: Missing required option --tools
+openspec init
+# Valid tools: amazon-q, auggie, claude, cursor, etc.
+
+# ✅ Fix
+openspec init --tools claude
+```
+
+#### Mistake 2: Wrong Case in Feature Name
+```bash
+# ❌ Error: Must be lowercase
+openspec new change Todo-List
+
+# ✅ Fix
+openspec new change todo-list-app
+```
+
+#### Mistake 3: Forgetting to Update
+```bash
+# ❌ Problem: Slash commands not working
+/opsx:new
+
+# ✅ Fix
+openspec update
+```
+
+#### Mistake 4: Missing Documents
+```bash
+# ❌ Bad: No documentation
+
+# ✅ Good: Complete docs
+openspec new change feature
+# Then manually create:
+# - README.md
+# - requirements.md
+# - scenarios.md
+# - design.md
+# - tasks.md
+```
+
+---
+
+### Tips for Claude Code Integration
+
+#### 1. Provide Clear Prompts
+```bash
+# ✅ Good
+claude -p "Create requirements.md for a todo list. Include:
+- Add, edit, delete, complete features
+- Local storage persistence
+- Filter tabs (All/Active/Completed)"
+
+# ❌ Bad
+claude -p "Create requirements"
+```
+
+#### 2. Specify File Locations
+```bash
+# ✅ Good
+claude -p "Create index.html in the project root"
+
+# ❌ Bad
+claude -p "Create index.html"
+```
+
+#### 3. Break Large Tasks
+```bash
+# ✅ Good - multiple focused tasks
+claude -p "Create HTML structure"
+claude -p "Add CSS styling"
+claude -p "Implement JavaScript"
+
+# ❌ Bad - one huge task
+claude -p "Create entire todo app"
+```
+
+#### 4. Reference OpenSpec Documents
+```bash
+# ✅ Good
+claude -p "Implement Task 1 from openspec/changes/todo-list-app/tasks.md"
+
+# ✅ Good
+claude -p "Follow the requirements in openspec/changes/todo-list-app/specs/requirements.md"
+```
+
+---
+
+### Testing & Verification Checklist
+
+- [ ] All files created in correct locations
+- [ ] HTML validates (W3C Validator)
+- [ ] CSS has no errors
+- [ ] JavaScript has no console errors
+- [ ] Features work as specified in requirements
+- [ ] Edge cases handled (empty input, long text, etc.)
+- [ ] Mobile layout works (responsive design)
+- [ ] Data persists (localStorage)
+- [ ] Accessibility (keyboard nav, ARIA labels)
+- [ ] Performance (fast load, smooth animations)
+
+---
+
+### Project Metrics (Example: Todo List)
+
+| Metric | Value |
+|--------|--------|
+| Core Files | 3 (HTML, CSS, JS) |
+| Documentation | 5 OpenSpec docs |
+| Dependencies | 0 (vanilla) |
+| Lines of Code | ~310 |
+| Features | 7 (+ filters, persistence) |
+| Responsive | Yes (mobile-first) |
+| Accessibility | Yes (keyboard, ARIA) |
+
+---
+
+### Quick Reference Card
+
+#### Daily Commands
+```bash
+# Start new feature
+openspec new change feature-name
+
+# Update AI
+openspec update
+
+# List changes
+openspec list
+
+# Archive complete
+openspec archive feature-name
+```
+
+#### File Locations
+```
+openspec/changes/
+├── feature-name/
+│   ├── README.md
+│   ├── design.md
+│   ├── specs/
+│   │   ├── requirements.md
+│   │   └── scenarios.md
+│   └── tasks.md
+```
+
+#### Documentation Checklist
+- [ ] README.md (features, usage)
+- [ ] requirements.md (functional specs)
+- [ ] scenarios.md (user stories)
+- [ ] design.md (technical approach)
+- [ ] tasks.md (implementation checklist)
+
+---
+
+### OpenSpec Experience Summary
+
+**Project:** Todo List App  
+**Date:** 2026-02-06  
+**Result:** ✅ Successfully completed with zero dependencies
+
+**Key Learnings:**
+1. OpenSpec provides excellent structure for small-to-medium projects
+2. Manual document creation is sometimes faster than waiting for Claude Code
+3. The specification documents help keep the project focused
+4. Task checklists make it easy to track progress
+5. Claude Code + OpenSpec = fast, structured development
+
+**Tips for Success:**
+1. Always run `openspec update` after init
+2. Create documents in this order: requirements → scenarios → design → tasks
+3. Use Claude Code for implementation, not documentation (faster)
+4. Test frequently (every 2-3 tasks)
+5. Archive features promptly to keep workspace clean
+
+---
+
+**OpenSpec Experience:** Todo List project completed successfully (2026-02-06)
+- Zero dependencies
+- Mobile-first responsive design
+- Complete OpenSpec documentation
+- Smooth integration with Claude Code
+
+**Key Takeaway:** OpenSpec + Claude Code = Structured, documented, maintainable projects
+

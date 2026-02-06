@@ -9,6 +9,7 @@ A skill that provides complete documentation and best practices for using Claude
 - ✅ Complete workflow guide for Claude Code + Spec-Kit
 - ✅ Correct usage formats and examples
 - ✅ **NEW: Known Issues and Solutions** (2026-02-06)
+- ✅ **NEW: OpenSpec Usage Tips & Best Practices** (2026-02-06)
 - ✅ Troubleshooting for common issues
 - ✅ Best practices and patterns
 - ✅ Configuration reference
@@ -172,9 +173,11 @@ See **[SKILL.md](./SKILL.md)** for complete troubleshooting guide.
 
 ## Version
 
-- **Current:** 2.3.0
+- **Current:** 2.4.0
 - **Last Updated:** 2026-02-06
-- **Key Update:** Added OpenSpec Alternative section
+- **Key Updates:** 
+  - Added OpenSpec Usage Tips & Best Practices
+  - Real-world workflow example (Todo List)
 - **Compatible with:** OpenClaw 2026.2.2+
 
 ---
