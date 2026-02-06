@@ -4,6 +4,36 @@
 
 A skill for invoking Claude Code programmatically from OpenClaw for coding tasks, code analysis, and development automation.
 
+## ⚠️ IMPORTANT: Project Directory Rule
+
+**ALL projects developed with Claude Code MUST be created in the workspace directory:**
+
+```
+/Users/apple/.openclaw/workspace/
+```
+
+### Why This Rule Exists
+- Centralized project management
+- Easy to track and backup
+- Consistent with OpenClaw's design
+- Prevents scattered project locations
+
+### How to Apply
+
+**✅ CORRECT:**
+```bash
+cd ~/.openclaw/workspace
+mkdir project-name
+cd project-name
+# Develop project here
+```
+
+**❌ INCORRECT:**
+```bash
+cd ~/Projects
+mkdir project-name  # Wrong location!
+```
+
 ## Installation
 
 Ensure Claude Code CLI is installed:
@@ -115,6 +145,24 @@ openclaw approvals allowlist add "/path/to/claude"
 - Break complex work into steps
 - Use manual implementation for reliability
 
+## Project Structure Template
+
+```
+~/.openclaw/workspace/
+└── project-name/
+    ├── index.html          # Main HTML
+    ├── styles.css          # All styles
+    ├── script.js           # Application logic
+    └── .specify/           # Spec-Kit workflow (if used)
+        ├── memory/
+        │   └── constitution.md
+        └── specs/
+            └── 001-feature-name/
+                ├── spec.md
+                ├── plan.md
+                └── tasks.md
+```
+
 ## Documentation
 
 - **Full Documentation**: [SKILL.md](./SKILL.md)
@@ -132,3 +180,4 @@ openclaw approvals allowlist add "/path/to/claude"
 - This skill provides a wrapper for Claude Code CLI
 - For best results, use in combination with spec-kit for planning
 - Manual verification of generated code is recommended
+- Always create projects in `~/.openclaw/workspace/`
