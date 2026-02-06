@@ -30,6 +30,101 @@ brew install --cask claude-code
 
 First-time use requires login: `claude`
 
+## ⭐ CRITICAL: Working Directory Rule
+
+**ALL projects developed with Claude Code MUST be created in the OpenClaw workspace directory:**
+
+```bash
+~/.openclaw/workspace/
+```
+
+### Why This Rule Exists
+- ✅ Centralized project management
+- ✅ Easy to track and backup
+- ✅ Consistent with OpenClaw's design philosophy
+- ✅ Prevents scattered project locations
+
+### How to Apply
+
+**✅ CORRECT:**
+```bash
+# Navigate to workspace first
+cd ~/.openclaw/workspace
+
+# Create new project
+mkdir my-project
+cd my-project
+
+# Start development...
+claude -p "Create a login page"
+```
+
+**❌ INCORRECT:**
+```bash
+# Never create projects outside workspace
+cd ~/Projects
+mkdir my-project  # WRONG LOCATION!
+cd my-project
+claude -p "Create a login page"  # Will create files in wrong place
+```
+
+### Project Structure Template
+
+```
+~/.openclaw/workspace/
+└── project-name/
+    ├── index.html          # Main HTML
+    ├── styles.css          # All styles
+    ├── script.js           # Application logic
+    └── .specify/           # Spec-Kit workflow (if used)
+        ├── memory/
+        │   └── constitution.md
+        └── specs/
+            └── 001-feature-name/
+                ├── spec.md
+                ├── plan.md
+                └── tasks.md
+```
+
+### Examples in Correct Location
+
+**Creating a new web project:**
+```bash
+cd ~/.openclaw/workspace
+mkdir my-website
+cd my-website
+claude -p "Create a responsive landing page with modern design"
+```
+
+**Creating a new skill:**
+```bash
+cd ~/.openclaw/workspace
+mkdir my-skill
+cd my-skill
+# Initialize spec-kit
+specify init . --ai claude --force
+claude -p "Create skill structure with README, SKILL.md, and examples"
+```
+
+**Creating an API project:**
+```bash
+cd ~/.openclaw/workspace
+mkdir my-api
+cd my-api
+claude -p "Build a REST API with Node.js and Express"
+```
+
+### Legacy Projects
+
+If you have existing projects outside `~/.openclaw/workspace/`, consider migrating them:
+
+```bash
+# Example migration
+cp -r ~/Projects/my-old-project ~/.openclaw/workspace/
+cd ~/.openclaw/workspace/my-old-project
+# Update any absolute paths in your code
+```
+
 ## ⚠️ IMPORTANT: Correct Usage Format
 
 ### ✅ CORRECT Formats
