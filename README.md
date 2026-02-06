@@ -1,197 +1,189 @@
 # Claude Code OpenClaw Skill
 
-## Overview
+🤖 **Comprehensive guide for invoking Claude Code programmatically with OpenClaw**
 
-A skill for invoking Claude Code programmatically from OpenClaw for coding tasks, code analysis, and development automation.
+A skill that provides complete documentation and best practices for using Claude Code with OpenClaw, including Spec-Kit workflow integration, troubleshooting, and development patterns.
 
-## ⚠️ IMPORTANT: Project Directory Rule
+## What This Skill Provides
 
-**ALL projects developed with Claude Code MUST be created in your OpenClaw workspace directory.**
-
-### How to Get Your Workspace Path
-
-**Method 1: Using OpenClaw CLI (Recommended ⭐)**
-```bash
-openclaw config get agents.defaults.workspace
-```
-
-**Method 2: Quick Navigation Script**
-```bash
-# Add to ~/.zshrc or ~/.bashrc
-alias cw='cd $(openclaw config get agents.defaults.workspace)'
-
-# Then use:
-cw  # Navigate to workspace
-mkdir my-new-project
-cd my-new-project
-```
-
-### Why This Rule Exists
-- Centralized project management
-- Easy to track and backup
-- Consistent with OpenClaw's design
-- Prevents scattered project locations
-
-### How to Apply
-
-**✅ CORRECT:**
-```bash
-cd $(openclaw config get agents.defaults.workspace)
-mkdir project-name
-cd project-name
-# Develop project here
-```
-
-**❌ INCORRECT:**
-```bash
-cd ~/Projects
-mkdir project-name  # Wrong location!
-```
-
-## Installation
-
-Ensure Claude Code CLI is installed:
-```bash
-# macOS/Linux/WSL
-curl -fsSL https://claude.ai/install.sh | bash
-
-# Or use Homebrew
-brew install --cask claude-code
-```
-
-## ⚠️ IMPORTANT: Correct Usage Format
-
-### ✅ CORRECT Formats
-
-```bash
-# Basic query (recommended)
-claude -p "Your task here"
-
-# With PTY for interactive features
-claude -p "Your task" --pty
-
-# Specify model
-claude --model minimax/MiniMax-M2.1 -p "Your task"
-
-# Interactive session
-claude
-```
-
-### ❌ INCORRECT Formats
-
-```bash
-# WRONG - bash pty:true is NOT valid syntax
-bash pty:true command:"claude -p 'Task'"
-
-# WRONG - This syntax doesn't work
-claude pty:true -p "Task"
-```
+- ✅ Complete workflow guide for Claude Code + Spec-Kit
+- ✅ Correct usage formats and examples
+- ✅ Troubleshooting for common issues
+- ✅ Best practices and patterns
+- ✅ Configuration reference
+- ✅ Real-world examples
 
 ## Quick Start
 
+### 1. Get Your Workspace
+
 ```bash
-# Simple query
-claude -p "What does this project do?"
-
-# Create a file (manual verification recommended)
-claude -p "Create index.html with basic structure"
-
-# Analyze code
-claude -p "Analyze this codebase structure"
+WORKSPACE=$(openclaw config get agents.defaults.workspace)
+cd $WORKSPACE
 ```
 
-## Configuration
+### 2. Create a Project
 
-### Set Default Model (MiniMax-M2.1)
 ```bash
+# Create and navigate
+cd $WORKSPACE
+mkdir my-project
+cd my-project
+
+# Initialize with Spec-Kit (recommended)
+specify init . --ai claude --force
+
+# Start developing
+claude -p "Create a landing page with HTML and CSS"
+```
+
+### 3. Development Workflow
+
+```bash
+# Plan with Spec-Kit
+claude -p "Use /speckit.constitution to create project principles"
+claude -p "Use /speckit.specify to define requirements"
+claude -p "Use /speckit.plan to create implementation plan"
+claude -p "Use /speckit.tasks to generate task breakdown"
+
+# Implement
+claude -p "Implement Task 1: HTML structure"
+claude -p "Implement Task 2: CSS styling"
+claude -p "Implement Task 3: JavaScript logic"
+```
+
+## Key Features
+
+### Correct Usage Format
+
+```bash
+# ✅ CORRECT
+claude -p "Your task"
+claude -p "Your task" --pty
+claude -p "Your task" workdir:~/project
+
+# ❌ INCORRECT
+bash pty:true command:"claude -p 'Task'"  # Wrong syntax!
+```
+
+### Complete Documentation
+
+See **[SKILL.md](./SKILL.md)** for:
+- Detailed workflow guide
+- All parameters and options
+- Troubleshooting common issues
+- Advanced configurations
+- Real-world examples
+
+### What You'll Learn
+
+1. **Setup & Configuration**
+   - Workspace directory rules
+   - Environment variables
+   - Permission settings
+
+2. **Spec-Kit Integration**
+   - Structured development workflow
+   - From planning to implementation
+   - Quality checkpoints
+
+3. **Best Practices**
+   - Breaking down complex tasks
+   - Using read-only queries
+   - Verifying generated code
+
+4. **Troubleshooting**
+   - Claude Code not responding
+   - Permission denied errors
+   - Timeout issues
+   - Wrong model usage
+
+## Documentation Structure
+
+| Document | Purpose |
+|----------|---------|
+| **SKILL.md** | Complete guide (start here) |
+| **examples/QUICK_REFERENCE.md** | Command quick reference |
+| **examples/USAGE.sh** | Executable examples |
+
+## Examples
+
+### Web Development
+
+```bash
+cd $(openclaw config get agents.defaults.workspace)
+mkdir website
+cd website
+
+claude -p "Create a responsive landing page"
+claude -p "Add CSS animations"
+claude -p "Create contact form with validation"
+```
+
+### API Development
+
+```bash
+cd $(openclaw config get agents.defaults.workspace)
+mkdir api
+cd api
+
+claude -p "Design REST API for user management"
+claude -p "Implement endpoints with Node.js"
+claude -p "Add unit tests"
+```
+
+### Code Review
+
+```bash
+cd my-project
+claude -p "Review recent changes"
+claude -p "Check for security issues"
+claude -p "Suggest performance improvements"
+```
+
+## Troubleshooting
+
+### Common Issues
+
+**Claude Code Not Responding**
+```bash
+# Check configuration
+cat ~/.claude/settings.json
+
+# Set environment variable
 openclaw config set env.ANTHROPIC_MODEL "MiniMax-M2.1"
 openclaw gateway restart
 ```
 
-### Add to Allowlist (Required for File Operations)
+**Permission Denied**
 ```bash
-openclaw approvals allowlist add "/Users/apple/.local/bin/claude"
+# Add to allowlist
+openclaw approvals allowlist add "/Users/yourname/.local/bin/claude"
 ```
 
-This allows Claude Code to create and edit files through OpenClaw.
-
-## Best Practices
-
-1. **Use Short, Focused Tasks**
-   - ✅ Good: `claude -p "What does this function do?"`
-   - ❌ Avoid: `claude -p "Build entire application"`
-
-2. **Break Complex Tasks**
-   ```bash
-   claude -p "Step 1: Create HTML structure"
-   claude -p "Step 2: Add CSS styling"
-   claude -p "Step 3: Implement JavaScript logic"
-   ```
-
-3. **Verify Output**
-   - Always manually check code generated by Claude Code
-   - Test in browser before committing
-
-4. **Use Read-Only Queries When Possible**
-   ```bash
-   # Read-only (faster, fewer permissions needed)
-   claude -p "Analyze this code"
-   
-   # File creation (slower, needs allowlist)
-   claude -p "Create new file"
-   ```
-
-## Troubleshooting
-
-### Claude Code Not Responding
-1. Check configuration: `cat ~/.claude/settings.json`
-2. Set environment variable: `openclaw config set env.ANTHROPIC_MODEL "MiniMax-M2.1"`
-3. Restart gateway: `openclaw gateway restart`
-
-### Permission Denied for File Operations
+**Files in Wrong Location**
 ```bash
-# Add Claude Code to allowlist
-openclaw approvals allowlist add "/path/to/claude"
+# Always get workspace dynamically
+cd $(openclaw config get agents.defaults.workspace)
 ```
 
-### Sessions Getting SIGKILL
-- Use shorter tasks
-- Break complex work into steps
-- Use manual implementation for reliability
+See **[SKILL.md](./SKILL.md)** for complete troubleshooting guide.
 
-## Project Structure Template
+## Resources
 
-```
-~/.openclaw/workspace/
-└── project-name/
-    ├── index.html          # Main HTML
-    ├── styles.css          # All styles
-    ├── script.js           # Application logic
-    └── .specify/           # Spec-Kit workflow (if used)
-        ├── memory/
-        │   └── constitution.md
-        └── specs/
-            └── 001-feature-name/
-                ├── spec.md
-                ├── plan.md
-                └── tasks.md
-```
+- 📖 **[SKILL.md](./SKILL.md)** - Complete documentation
+- 📝 **[examples/QUICK_REFERENCE.md](./examples/QUICK_REFERENCE.md)** - Command reference
+- 💻 **[examples/USAGE.sh](./examples/USAGE.sh)** - Executable examples
+- 🔗 [Claude Code Docs](https://code.claude.com/docs)
+- 🔗 [Spec-Kit](https://github.com/github/spec-kit)
+- 🔗 [OpenClaw Docs](https://docs.openclaw.ai)
 
-## Documentation
+## Version
 
-- **Full Documentation**: [SKILL.md](./SKILL.md)
-- **Examples**: [examples/QUICK_REFERENCE.md](./examples/QUICK_REFERENCE.md)
-- **Usage Scripts**: [examples/USAGE.sh](./examples/USAGE.sh)
+- **Current:** 2.0.0
+- **Last Updated:** 2026-02-06
+- **Compatible with:** OpenClaw 2026.2.2+
 
-## Related Resources
+---
 
-- [Claude Code Official Docs](https://code.claude.com/docs)
-- [OpenClaw Documentation](https://docs.openclaw.ai)
-- [Spec-Kit](https://github.com/github/spec-kit) - For structured development workflow
-
-## Notes
-
-- This skill provides a wrapper for Claude Code CLI
-- For best results, use in combination with spec-kit for planning
-- Manual verification of generated code is recommended
-- Always create projects in `~/.openclaw/workspace/`
+**💡 Tip:** Start with SKILL.md for the complete guide, then use QUICK_REFERENCE.md for fast lookups during development.

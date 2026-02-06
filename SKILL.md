@@ -1,608 +1,986 @@
 ---
 name: claude-code-openclaw-skill
-description: Invoke Claude Code programmatically for coding tasks, code analysis, and development workflows. Supports interactive mode, one-shot queries, and structured JSON output.
+description: Comprehensive guide for invoking Claude Code programmatically with OpenClaw, including Spec-Kit workflow, troubleshooting, and best practices.
 metadata:
   {
     "openclaw": {
       "emoji": "🤖",
       "requires": {
-        "anyBins": ["claude"]
+        "anyBins": ["claude", "specify"]
       }
     }
   }
 ---
 
-# Claude Code Skill
+# Claude Code OpenClaw Skill
 
-Invoke Claude Code programmatically from OpenClaw for coding tasks, code analysis, debugging, and development automation.
+**Comprehensive guide for invoking Claude Code programmatically with OpenClaw, including Spec-Kit workflow, troubleshooting, and best practices.**
 
-## Installation
+## Table of Contents
 
-Ensure Claude Code CLI is installed:
+1. [Quick Start](#quick-start)
+2. [Working Directory Rule](#working-directory-rule)
+3. [Correct Usage Format](#correct-usage-format)
+4. [Complete Workflow with Spec-Kit](#complete-workflow-with-spec-kit)
+5. [Common Parameters](#common-parameters)
+6. [Best Practices](#best-practices)
+7. [Troubleshooting](#troubleshooting)
+8. [Configuration](#configuration)
+9. [Examples](#examples)
+
+---
+
+## Quick Start
+
+### Installation
 
 ```bash
-# macOS/Linux/WSL
+# Install Claude Code (macOS/Linux/WSL)
 curl -fsSL https://claude.ai/install.sh | bash
 
 # Or use Homebrew
 brew install --cask claude-code
+
+# First-time login
+claude
 ```
 
-First-time use requires login: `claude`
+### First Project in 5 Minutes
 
-## ⭐ CRITICAL: Working Directory Rule
+```bash
+# 1. Get workspace path
+WORKSPACE=$(openclaw config get agents.defaults.workspace)
+cd $WORKSPACE
 
-**ALL projects developed with Claude Code MUST be created in the OpenClaw workspace directory.**
+# 2. Create project directory
+mkdir my-first-project
+cd my-first-project
+
+# 3. Initialize Spec-Kit (optional but recommended)
+specify init . --ai claude --force
+
+# 4. Start developing
+claude -p "Create a simple landing page with HTML and CSS"
+```
+
+---
+
+## Working Directory Rule
+
+**⭐ CRITICAL: ALL projects MUST be created in your OpenClaw workspace directory.**
 
 ### How to Get Your Workspace Path
 
-**Method 1: Using OpenClaw CLI (Recommended ⭐)**
+**Method 1: OpenClaw CLI (Recommended)**
 ```bash
-# Get workspace path from configuration
 openclaw config get agents.defaults.workspace
-
-# Example output:
-# /Users/apple/code/AIWorkspace
+# Output: /Users/yourname/code/AIWorkspace
 ```
 
-**Method 2: Using Environment Variable**
+**Method 2: Environment Variable**
 ```bash
-# Set and use workspace
-WORKSPACE=$(openclaw config get agents.defaults.workspace)
-cd $WORKSPACE
+cd $(openclaw config get agents.defaults.workspace)
 ```
 
-**Method 3: Direct Configuration Lookup**
+**Method 3: Quick Alias (Add to ~/.zshrc or ~/.bashrc)**
 ```bash
-# Check openclaw.json
-cat ~/.openclaw/openclaw.json | grep '"workspace"'
+alias cw='cd $(openclaw config get agents.defaults.workspace)'
+
+# Usage
+cw
+mkdir new-project
+cd new-project
 ```
 
 ### Why This Rule Exists
+
 - ✅ Centralized project management
 - ✅ Easy to track and backup
-- ✅ Consistent with OpenClaw's design philosophy
-- ✅ Prevents scattered project locations
+- ✅ Consistent with OpenClaw's design
+- ✅ Prevents scattered projects
 
-### How to Apply
+### Examples
 
 **✅ CORRECT:**
 ```bash
-# Step 1: Get workspace path
-WORKSPACE=$(openclaw config get agents.defaults.workspace)
-
-# Step 2: Navigate to workspace
-cd $WORKSPACE
-
-# Step 3: Create and enter project directory
+cd $(openclaw config get agents.defaults.workspace)
 mkdir my-project
 cd my-project
-
-# Step 4: Start development
-claude -p "Create a login page"
+claude -p "Create a web app"
 ```
 
 **❌ INCORRECT:**
 ```bash
-# Never hardcode paths
-cd /Users/apple/code/AIWorkspace  # Hardcoded - NOT recommended
+cd ~/Projects  # Wrong location!
 mkdir my-project
-
-# Or use wrong location
-cd ~/Projects
-mkdir my-project  # WRONG LOCATION!
+claude -p "Create a web app"
 ```
 
-### Quick Reference Script
+---
 
-Create a helper script to automatically navigate to workspace:
-
-```bash
-# Add to your ~/.zshrc or ~/.bashrc
-alias cw='cd $(openclaw config get agents.defaults.workspace)'
-
-# Then use:
-cw  # Navigate to workspace
-mkdir my-new-project
-cd my-new-project
-```
-
-### Project Structure Template
-
-```
-# Your workspace (dynamic from config)
-$(openclaw config get agents.defaults.workspace)/
-└── project-name/
-    ├── index.html          # Main HTML
-    ├── styles.css          # All styles
-    ├── script.js           # Application logic
-    └── .specify/           # Spec-Kit workflow (if used)
-        ├── memory/
-        │   └── constitution.md
-        └── specs/
-            └── 001-feature-name/
-                ├── spec.md
-                ├── plan.md
-                └── tasks.md
-```
-
-### Examples in Correct Location
-
-**Creating a new web project:**
-```bash
-cd $(openclaw config get agents.defaults.workspace)
-mkdir my-website
-cd my-website
-claude -p "Create a responsive landing page with modern design"
-```
-
-**Creating a new skill:**
-```bash
-cd $(openclaw config get agents.defaults.workspace)
-mkdir my-skill
-cd my-skill
-# Initialize spec-kit
-specify init . --ai claude --force
-claude -p "Create skill structure with README, SKILL.md, and examples"
-```
-
-**Creating an API project:**
-```bash
-cd $(openclaw config get agents.defaults.workspace)
-mkdir my-api
-cd my-api
-claude -p "Build a REST API with Node.js and Express"
-```
-
-### Legacy Projects Migration
-
-If you have existing projects outside your workspace, migrate them:
-
-```bash
-# Get workspace path
-WORKSPACE=$(openclaw config get agents.defaults.workspace)
-
-# Copy project to workspace
-cp -r ~/Projects/my-old-project $WORKSPACE/
-
-# Navigate and verify
-cd $WORKSPACE/my-old-project
-ls -la
-
-# Update any hardcoded paths in your code if needed
-```
-
-## ⚠️ IMPORTANT: Correct Usage Format
+## Correct Usage Format
 
 ### ✅ CORRECT Formats
 
 ```bash
-# Basic query (recommended ⭐)
+# Basic query (most common ⭐)
 claude -p "Your task here"
 
-# With PTY for interactive features
+# With interactive features
 claude -p "Your task" --pty
-
-# Interactive session
-claude
 
 # Specify working directory
 claude -p "Your task" workdir:~/project
 
 # With model specification
 claude --model minimax/MiniMax-M2.1 -p "Your task"
+
+# Interactive session
+claude
+
+# Continue previous session
+claude --continue
+
+# JSON output
+claude -p --output-format json "Your query"
 ```
 
 ### ❌ INCORRECT Formats
 
 ```bash
-# WRONG - bash pty:true is NOT valid syntax in OpenClaw exec tool
+# WRONG - bash pty:true is NOT valid
 bash pty:true command:"claude -p 'Task'"
-
 # Error: bash: pty:true: No such file or directory
 
-# WRONG - This syntax doesn't work
+# WRONG - Invalid syntax
 claude pty:true -p "Task"
 ```
 
 ### Why This Matters
 
-The OpenClaw `exec` tool does NOT use `bash pty:true` syntax. Instead:
+The OpenClaw `exec` tool uses a different syntax than traditional bash commands:
 
-- Use `claude` directly as the command
-- Add flags like `-p`, `--pty`, `--model` as needed
-- Use `workdir:` parameter for directory specification
+| Feature | Correct | Incorrect |
+|---------|---------|-----------|
+| PTY mode | `claude -p "..." --pty` | `bash pty:true command:"..."` |
+| Working directory | `claude -p "..." workdir:~/project` | `cd ~/project && claude -p "..."` |
+| Model | `claude --model X -p "..."` | `claude -m X -p "..."` |
 
-## Usage Modes
+---
 
-### 1. Interactive Mode
+## Complete Workflow with Spec-Kit
 
-For user interaction, starts a complete Claude Code session:
+Spec-Kit provides a structured approach to development using Claude Code.
 
-```bash
-# Start interactive session
-claude
+### What is Spec-Kit?
 
-# Continue previous session
-claude --continue
+Spec-Kit is GitHub's toolkit for **Spec-Driven Development** - a methodology where:
+1. Specifications are executable
+2. Planning happens before coding
+3. AI agents follow structured workflows
+4. Quality is ensured through checkpoints
+
+### Workflow Overview
+
+```
+1. Initialize Project
+   └── specify init . --ai claude --force
+
+2. Create Constitution (Project Principles)
+   └── Define code quality, design standards, workflows
+
+3. Write Specification (What to Build)
+   └── User stories, requirements, acceptance criteria
+
+4. Create Plan (How to Build)
+   └── Tech stack, architecture, implementation details
+
+5. Generate Tasks (Breakdown)
+   └── Actionable steps with dependencies
+
+6. Implement (Build)
+   └── Execute tasks following the plan
 ```
 
-### 2. Print Mode ⭐ Recommended
+### Step-by-Step Guide
 
-Single-query mode, executes and exits automatically, suitable for programmatic calls:
+#### Step 1: Initialize Project
 
 ```bash
-# Basic usage
-claude -p "Your task here"
+cd $(openclaw config get agents.defaults.workspace)
+mkdir my-awesome-project
+cd my-awesome-project
 
-# Specify working directory
-claude -p "Explain the authentication flow" workdir:~/project
-
-# JSON output (for parsing results)
-claude -p --output-format json "List all functions in main.py"
-
-# Stream JSON output
-claude -p --output-format stream-json --include-partial-messages "Analyze this codebase"
+# Initialize with Spec-Kit
+specify init . --ai claude --force
 ```
 
-### 3. Continue Session
-
-Continue recent work:
-
-```bash
-# Continue most recent conversation
-claude --continue
-
-# Continue with a query
-claude -c -p "Continue from where we left off"
+**Expected Output:**
+```
+╭───────────────────────────────────────────────────────╮
+│  Specify Project Setup                                │
+╰───────────────────────────────────────────────────────╯
+Project: my-awesome-project
+Working Path: /Users/.../my-awesome-project
+Selected AI: claude
+Script: sh
+├── Check tools (ok)
+├── Fetch latest release
+├── Download template
+├── Extract template
+└── Project ready!
 ```
 
-### 4. Resume Specific Session
+#### Step 2: Create Constitution
 
 ```bash
-# Resume by name
-claude -r "auth-refactor" "Finish implementing the auth flow"
+# Use Claude Code to create constitution
+claude -p "Use /speckit.constitution command to create project constitution.
 
-# Resume by ID
-claude --session-id "550e8400-e29b-41d4-a716-446655440000" "Continue working"
+Create principles focused on:
+- Code quality standards
+- Design requirements
+- Testing requirements
+- Performance guidelines
+- Security considerations
+
+The project is a web application using HTML/CSS/JavaScript."
+
+# Or create manually:
+cat > .specify/memory/constitution.md << 'EOF'
+# Project Constitution
+
+## Core Principles
+
+### I. Code Quality
+- Clean, readable code
+- No unnecessary dependencies
+- Self-documenting with clear naming
+
+### II. Design Standards
+- Responsive layout
+- Accessibility compliance
+- Smooth animations (60fps)
+
+### III. Testing
+- Manual testing required
+- Cross-browser compatibility
+
+## Technology Stack
+- Vanilla HTML5, CSS3, JavaScript (ES6+)
+- No frameworks (keep it simple)
+
+## Governance
+All decisions follow these principles.
+EOF
 ```
 
-## Common Parameter Combinations
-
-### Code Analysis
+#### Step 3: Write Specification
 
 ```bash
-# Analyze project structure
-claude -p "What technologies does this project use?"
+claude -p "Use /speckit.specify command to create a feature specification.
 
-# Explain specific function
-claude -p "Explain the main() function in src/main.py"
-
-# Explain folder structure
-claude -p "Explain the folder structure of this project"
+Describe: A todo list application where users can:
+1. Create, edit, delete tasks
+2. Mark tasks as complete
+3. Organize tasks by categories
+4. Filter tasks by category
+5. Data persists in local storage"
 ```
 
-### Code Generation
-
+**Or create manually:**
 ```bash
-# Add feature
-claude -p "Add a hello world function to src/utils.rs"
+mkdir -p .specify/specs/001-todo-app
 
-# Refactor code
-claude -p --append-system-prompt "Always use async/await" "Refactor the auth module"
+cat > .specify/specs/001-todo-app/spec.md << 'EOF'
+# Feature: Todo List App
 
-# Fix bug
-claude -p "Fix the bug where users can submit empty forms"
+## User Stories
+
+### Story 1: Create Task (Priority: P1)
+As a user, I want to create tasks so I can track my work.
+
+**Acceptance:**
+- Given user enters task, When submits, Then task appears in list
+- Given empty input, When submits, Then show error
+
+### Story 2: Complete Task (Priority: P1)
+As a user, I want to mark tasks as complete.
+
+**Acceptance:**
+- Given task exists, When checkbox clicked, Then task marked complete
+- Given task complete, When unchecked, Then task reopened
+
+## Requirements
+- FR-001: Users MUST create tasks
+- FR-002: Users MUST edit tasks
+- FR-003: Users MUST delete tasks
+- FR-004: Users MUST mark complete
+EOF
 ```
 
-### Git Operations
+#### Step 4: Create Plan
 
 ```bash
-# View changes
-claude -p "What files have I changed?"
+claude -p "Use /speckit.plan command to create implementation plan.
 
-# Create commit
-claude commit
-
-# Create branch
-claude -p "Create a new branch called feature/user-authentication"
-
-# Help resolve merge conflicts
-claude -p "Help me resolve merge conflicts"
+Tech stack:
+- HTML5, CSS3, JavaScript (ES6+)
+- Local storage for persistence
+- No frameworks"
 ```
 
-### Code Review
-
+**Or manually:**
 ```bash
-# Review changes
-claude -p "Review my changes and suggest improvements"
+cat > .specify/specs/001-todo-app/plan.md << 'EOF'
+# Implementation Plan
 
-# Write tests
-claude -p "Write unit tests for the calculator functions"
+## Architecture
+
+### Files
+```
+todo-app/
+├── index.html      # Main structure
+├── styles.css      # Styling
+├── script.js       # Logic
+└── .specify/
+    └── specs/
+        └── 001-todo-app/
+            ├── spec.md
+            ├── plan.md
+            └── tasks.md
 ```
 
-## Advanced Usage
+## Implementation Steps
 
-### Custom Model
+### Phase 1: HTML Structure
+- Create semantic HTML5
+- Add form for task input
+- Create task list container
+- Add proper ARIA labels
+
+### Phase 2: CSS Styling
+- Responsive design
+- Clean, modern UI
+- Smooth animations
+
+### Phase 3: JavaScript
+- Task CRUD operations
+- Local storage sync
+- Event handlers
+- Form validation
+
+## Testing
+- Manual browser testing
+- Responsive check
+- Accessibility verification
+EOF
+```
+
+#### Step 5: Generate Tasks
 
 ```bash
-# Use specific model
+claude -p "Use /speckit.tasks command to break down the plan into actionable tasks."
+```
+
+**Or manually:**
+```bash
+cat > .specify/specs/001-todo-app/tasks.md << 'EOF'
+# Tasks
+
+## Task 1: HTML Structure
+**File**: index.html
+- [ ] Create main container
+- [ ] Add task form
+- [ ] Create task list
+- [ ] Add ARIA labels
+
+## Task 2: CSS Styling
+**File**: styles.css
+- [ ] Base styles
+- [ ] Form styling
+- [ ] Task card styling
+- [ ] Responsive design
+
+## Task 3: JavaScript Logic
+**File**: script.js
+- [ ] Task class
+- [ ] CRUD operations
+- [ ] Local storage
+- [ ] Event listeners
+EOF
+```
+
+#### Step 6: Implement
+
+```bash
+# Execute tasks one by one
+claude -p "Implement Task 1: Create index.html with semantic HTML, form, task list, and ARIA labels."
+
+claude -p "Implement Task 2: Add CSS styling for responsive design, form elements, and task cards."
+
+claude -p "Implement Task 3: Create JavaScript for task CRUD operations and local storage persistence."
+```
+
+### Spec-Kit Command Reference
+
+| Command | Description | When to Use |
+|---------|-------------|-------------|
+| `/speckit.constitution` | Create project principles | Before any development |
+| `/speckit.specify` | Define requirements | After constitution |
+| `/speckit.plan` | Create technical plan | After specification |
+| `/speckit.tasks` | Generate task breakdown | After plan |
+| `/speckit.implement` | Execute all tasks | Ready to build |
+| `/speckit.clarify` | Ask structured questions | When requirements unclear |
+| `/speckit.checklist` | Quality checklist | Before deployment |
+
+---
+
+## Common Parameters
+
+### Basic Parameters
+
+```bash
+# Print mode (most common)
+claude -p "Your task"
+
+# With specific model
 claude --model minimax/MiniMax-M2.1 -p "Your task"
 
-# Fallback model (when default is overloaded)
-claude -p --fallback-model sonnet "Your task"
+# Interactive session
+claude
+
+# Continue previous
+claude --continue
 ```
 
-### Custom System Prompt
+### Output Control
 
 ```bash
-# Replace system prompt entirely
-claude --system-prompt "You are a Python expert" -p "Create a new API endpoint"
+# JSON output
+claude -p --output-format json "Your query"
 
-# Load from file
-claude -p --system-prompt-file ./prompts/python-expert.txt "Build a Django model"
+# Stream JSON (real-time)
+claude -p --output-format stream-json --include-partial-messages "Your query"
 
-# Append to default prompt
-claude --append-system-prompt "Always use TypeScript" -p "Create a new component"
+# Verbose logging
+claude -p --verbose "Your task"
 ```
 
-### Tool Restrictions
+### Behavior Control
 
 ```bash
-# Allow only specific tools
-claude --tools "Read,Edit,Bash" -p "Add error handling"
+# Budget limit ($2.00)
+claude -p --max-budget-usd 2.00 "Your task"
 
-# Disable all tools
-claude --tools "" -p "Explain this code"
-
-# Use default tools
-claude --tools default -p "Your task"
-```
-
-### Budget & Limits
-
-```bash
-# Maximum spending limit
-claude -p --max-budget-usd 5.00 "Your task"
-
-# Maximum turns limit
+# Max turns (3)
 claude -p --max-turns 3 "Your task"
 
-# Disable session persistence
+# No persistence
 claude -p --no-session-persistence "Your task"
+```
+
+### Customization
+
+```bash
+# Custom system prompt
+claude --system-prompt "You are a Python expert" -p "Your task"
+
+# Append to default
+claude --append-system-prompt "Always use TypeScript" -p "Your task"
+
+# From file
+claude -p --system-prompt-file ./prompts/custom.txt "Your task"
 ```
 
 ### Permission Modes
 
 ```bash
-# Plan mode (view only, no modifications)
+# Plan mode (read-only)
 claude --permission-mode plan -p "Review my code"
 
-# Allow skipping permissions (use with caution)
+# Skip permissions
 claude --permission-mode plan --allow-dangerously-skip-permissions -p "Your task"
 ```
 
-## Pipeline & Redirection
-
-### Process Pipeline Input
-
-```bash
-# Analyze from file
-claude -p "Analyze this error" < error.log
-
-# Process piped content
-cat logs.txt | claude -p "Explain these errors"
-```
-
-### Output Redirection
-
-```bash
-# Save to file
-claude -p --output-format json "List all imports" > imports.json
-
-# Save verbose logs
-claude -p --verbose "Your task" > output.log 2>&1
-```
+---
 
 ## Best Practices
 
-### 1. Use Short Tasks
-
-Claude Code works best with focused, short tasks:
+### 1. Start Small
 
 ```bash
-# ✅ Good - short and specific
-claude -p "What does this function do?"
+# ✅ Good
+claude -p "Create a button component"
 
-# ❌ Avoid - too broad and may timeout
-claude -p "Build an entire e-commerce application"
+# ❌ Too broad
+claude -p "Build an entire e-commerce platform"
 ```
 
-### 2. Step-by-Step Execution
-
-Break complex tasks into smaller steps:
+### 2. Break Complex Tasks
 
 ```bash
-# Instead of one big task:
-claude -p "Build entire todo app"
+# Instead of one task:
+claude -p "Build todo app with auth, database, API"
 
-# Use multiple small tasks:
-claude -p "Create HTML structure for todo app"
-claude -p "Add CSS styling for skeuomorphic design"
-claude -p "Implement JavaScript logic"
+# Break into steps:
+claude -p "Step 1: Design database schema"
+claude -p "Step 2: Create HTML structure"
+claude -p "Step 3: Add CSS styling"
+claude -p "Step 4: Implement JavaScript"
+claude -p "Step 5: Add authentication"
+claude -p "Step 6: Connect to API"
 ```
 
-### 3. Use Read-Only Queries When Possible
-
-Reduces permission issues and faster responses:
+### 3. Use Read-Only First
 
 ```bash
-# Read-only queries work best
-claude -p "Analyze this codebase"
+# ✅ Faster and safer
+claude -p "Analyze this codebase structure"
 
-claude -p "What files have changed?"
+claude -p "What files need updating?"
+
+# Then create files
+claude -p "Create index.html based on the analysis"
 ```
 
-### 4. Specify Working Directory
-
-Use `workdir` to limit Claude Code's access:
+### 4. Always Verify
 
 ```bash
-# Run in specific project directory
-claude -p "Fix the login bug" workdir:~/Projects/myapp
+# Claude Code generates code
+claude -p "Create a login form"
+
+# Always verify manually:
+cat index.html
+
+# Test in browser
+python3 -m http.server 8080
+# Open http://localhost:8080
 ```
 
-### 5. Use JSON Output for Parsing
-
-When you need to parse Claude Code's output:
+### 5. Use Proper Error Handling
 
 ```bash
-claude -p --output-format json "What is the main function?" | jq -r '.result'
-```
+# Set timeouts
+claude -p "Your complex task" timeout:60
 
-### 6. Set Reasonable Limits
-
-```bash
-# Budget limit
-claude -p --max-budget-usd 2.00 "Your task"
-
-# Turn limit
-claude -p --max-turns 5 "Your task"
-```
-
-## Known Limitations
-
-### 1. Long-Running Tasks Get SIGKILL
-
-System may kill processes that run too long:
-
-```bash
-# May be killed if takes >30 seconds
-claude -p "Complex refactoring task"
-
-# Better approach - break into steps
-claude -p "Step 1: Analyze current code"
-claude -p "Step 2: Create refactoring plan"
-claude -p "Step 3: Implement changes"
-```
-
-### 2. File Writes Require Permissions
-
-OpenClaw security may block file operations:
-
-```bash
-# Claude Code may not be able to create files directly
-claude -p "Create index.html"
-
-# Alternative: Ask Claude Code for the code, then write it manually
-# Or grant permissions in OpenClaw settings
-```
-
-### 3. Background Mode
-
-For long tasks, use background mode:
-
-```bash
-# Run in background
-claude -p "Complex task..." background:true
-
-# Check progress
-process action:log sessionId:XXX
-```
-
-## Troubleshooting
-
-### Claude Code Not Responding
-
-**Problem**: Claude Code starts but produces no output
-
-**Solution**:
-1. Check if MiniMax model is configured:
-   ```bash
-   cat ~/.claude/settings.json
-   ```
-
-2. Set environment variable in OpenClaw:
-   ```bash
-   openclaw config set env.ANTHROPIC_MODEL "MiniMax-M2.1"
-   openclaw gateway restart
-   ```
-
-3. Verify configuration:
-   ```bash
-   claude --version
-   ```
-
-### Authentication Issues
-
-**Problem**: Claude Code asks for login
-
-**Solution**:
-```bash
-claude
-# Follow login prompts
-```
-
-### Model Not Found
-
-**Problem**: Wrong model or model not available
-
-**Solution**:
-```bash
-# Specify model explicitly
-claude --model minimax/MiniMax-M2.1 -p "Your task"
-```
-
-### Timeout Errors
-
-**Problem**: Task takes too long and gets killed
-
-**Solution**:
-- Break into smaller steps
-- Use simpler queries
-- Reduce scope of task
-
-## OpenClaw Integration
-
-### Notify on Completion
-
-For long-running tasks, have Claude Code notify OpenClaw:
-
-```bash
-claude -p "Build the REST API.
-
-When completely finished, run: openclaw gateway wake --text \"Done: Built REST API\" --mode now"
-```
-
-### Error Handling
-
-```bash
-# Set timeout
-claude -p "Your task" timeout:60
-
-# Check exit code
+# Check exit status
 claude -p "Your task" && echo "Success" || echo "Failed"
 ```
 
-## Configuration Locations
+### 6. Document Your Work
 
-### Claude Code Settings
-- Location: `~/.claude/settings.json`
-- Debug logs: `~/.claude/debug/`
-
-### OpenClaw Environment Variables
 ```bash
-# Set environment variable
-openclaw config set env.VARIABLE_NAME "value"
+# Use Spec-Kit for documentation
+claude -p "Document the codebase with README.md"
 
-# Requires gateway restart
+# Include examples
+claude -p "Add code examples to README.md"
+```
+
+---
+
+## Troubleshooting
+
+### Problem 1: Claude Code Not Responding
+
+**Symptoms:**
+- Starts but no output
+- Gets SIGKILL
+- Times out immediately
+
+**Solutions:**
+
+1. Check configuration:
+```bash
+cat ~/.claude/settings.json
+```
+
+2. Set environment variable:
+```bash
+openclaw config set env.ANTHROPIC_MODEL "MiniMax-M2.1"
 openclaw gateway restart
 ```
 
+3. Verify model:
+```bash
+claude --version
+```
+
+### Problem 2: Permission Denied for File Operations
+
+**Symptoms:**
+- "Cannot create file"
+- "Permission denied"
+- Files not being written
+
+**Solutions:**
+
+1. Add to allowlist:
+```bash
+openclaw approvals allowlist add "/Users/yourname/.local/bin/claude"
+```
+
+2. Verify allowlist:
+```bash
+cat ~/.openclaw/exec-approvals.json
+```
+
+### Problem 3: Wrong Model Being Used
+
+**Symptoms:**
+- Different responses than expected
+- "Model not found" errors
+- Unexpected behavior
+
+**Solutions:**
+
+1. Explicitly specify model:
+```bash
+claude --model minimax/MiniMax-M2.1 -p "Your task"
+```
+
+2. Check default model:
+```bash
+openclaw config get agents.defaults.model.primary
+```
+
+### Problem 4: Long Tasks Timing Out
+
+**Symptoms:**
+- Gets SIGKILL after ~30 seconds
+- Incomplete output
+- "Session closed" errors
+
+**Solutions:**
+
+1. Break into smaller tasks:
+```bash
+# Instead of:
+claude -p "Create entire app"
+
+# Do:
+claude -p "Create HTML structure"
+claude -p "Add CSS styling"
+claude -p "Implement JavaScript"
+```
+
+2. Use simpler queries:
+```bash
+# Instead of complex analysis:
+claude -p "Analyze this function"
+
+# Use focused query:
+claude -p "What does this function return?"
+```
+
+### Problem 5: Files Created in Wrong Location
+
+**Symptoms:**
+- Files appear in wrong directory
+- Cannot find created files
+- Path confusion
+
+**Solutions:**
+
+1. Always use workdir parameter:
+```bash
+# ✅ Correct
+claude -p "Create file" workdir:~/project
+
+# ❌ Wrong
+cd ~/project && claude -p "Create file"
+```
+
+2. Navigate first, then use relative paths:
+```bash
+cd ~/project
+claude -p "Create index.html"  # Creates in current dir
+```
+
+### Problem 6: JSON Output Not Parsable
+
+**Symptoms:**
+- jq: parse error
+- Unexpected output format
+- Missing data
+
+**Solutions:**
+
+1. Use correct flags:
+```bash
+# ✅ Correct
+claude -p --output-format json "Your query" | jq '.result'
+
+# ❌ Wrong
+claude -p "Your query" | jq '.result'
+```
+
+2. Check jq installation:
+```bash
+which jq
+```
+
+### Problem 7: Interactive Mode Not Working
+
+**Symptoms:**
+- Cannot use interactive features
+- Sessions not continuing
+- "Not in interactive mode" errors
+
+**Solutions:**
+
+1. Use correct command:
+```bash
+# For interactive
+claude
+
+# For one-shot
+claude -p "Your task"
+```
+
+2. Check TTY:
+```bash
+# Use --pty flag
+claude -p "Interactive task" --pty
+```
+
+---
+
+## Configuration
+
+### OpenClaw Configuration
+
+**Location:** `~/.openclaw/openclaw.json`
+
+**Key Settings:**
+```json
+{
+  "agents": {
+    "defaults": {
+      "workspace": "/Users/yourname/code/AIWorkspace",
+      "model": {
+        "primary": "minimax/MiniMax-M2.1"
+      }
+    }
+  }
+}
+```
+
+### Claude Code Configuration
+
+**Location:** `~/.claude/settings.json`
+
+**Example:**
+```json
+{
+  "env": {
+    "ANTHROPIC_MODEL": "MiniMax-M1.1",
+    "ANTHROPIC_BASE_URL": "https://api.minimaxi.com/anthropic"
+  }
+}
+```
+
+### Environment Variables
+
+**Set via OpenClaw:**
+```bash
+openclaw config set env.VARIABLE_NAME "value"
+openclaw gateway restart
+```
+
+**Common Variables:**
+```bash
+openclaw config set env.ANTHROPIC_MODEL "MiniMax-M2.1"
+openclaw config set env.ANTHROPIC_BASE_URL "https://api.minimaxi.com/anthropic"
+```
+
+### Allowlist Configuration
+
+**Location:** `~/.openclaw/exec-approvals.json`
+
+**Add Claude Code:**
+```bash
+openclaw approvals allowlist add "/Users/yourname/.local/bin/claude"
+```
+
+**Result:**
+```json
+{
+  "agents": {
+    "*": {
+      "allowlist": [{
+        "pattern": "/Users/yourname/.local/bin/claude"
+      }]
+    }
+  }
+}
+```
+
+---
+
+## Examples
+
+### Example 1: Create a Web Project
+
+```bash
+# 1. Setup
+cd $(openclaw config get agents.defaults.workspace)
+mkdir my-website
+cd my-website
+specify init . --ai claude --force
+
+# 2. Create constitution
+claude -p "Create constitution.md focusing on responsive design and accessibility."
+
+# 3. Plan and build
+claude -p "Create index.html with semantic HTML and ARIA labels."
+claude -p "Add CSS for responsive design."
+claude -p "Add JavaScript for mobile menu toggle."
+
+# 4. Test
+python3 -m http.server 8080
+# Open http://localhost:8080
+```
+
+### Example 2: Create a Skill
+
+```bash
+# 1. Setup
+cd $(openclaw config get agents.defaults.workspace)
+mkdir my-awesome-skill
+cd my-awesome-skill
+specify init . --ai claude --force
+
+# 2. Structure
+claude -p "Create README.md, SKILL.md, and examples/ directory structure."
+
+# 3. Content
+claude -p "Write comprehensive SKILL.md with usage examples."
+
+# 4. Test
+claude -p "Verify all files follow skill template requirements."
+
+# 5. Publish
+git add .
+git commit -m "Initial commit"
+git push origin main
+```
+
+### Example 3: Code Review
+
+```bash
+# 1. Navigate to project
+cd $(openclaw config get agents.defaults.workspace)
+cd my-project
+
+# 2. Review changes
+claude -p "What files have changed since last commit?"
+
+# 3. Detailed review
+claude -p "Review the changes for security issues."
+
+# 4. Suggestions
+claude -p "Suggest improvements for the modified code."
+```
+
+### Example 4: Bug Fix
+
+```bash
+# 1. Describe the bug
+claude -p "There's a bug where form submits empty data. Help identify the issue."
+
+# 2. Get fix
+claude -p "Add validation to prevent empty form submission."
+
+# 3. Test
+claude -p "Create a test to verify the fix works."
+```
+
+### Example 5: API Development
+
+```bash
+# 1. Plan API
+claude -p "Design a REST API for user management with endpoints:
+- GET /users
+- POST /users
+- GET /users/:id
+- PUT /users/:id
+- DELETE /users/:id"
+
+# 2. Implement
+claude -p "Create server.js with Express.js for the API."
+
+# 3. Add tests
+claude -p "Write unit tests for each endpoint."
+
+# 4. Document
+claude -p "Generate API documentation in README.md."
+```
+
+---
+
+## Quick Reference
+
+### Essential Commands
+
+```bash
+# Get workspace
+WORKSPACE=$(openclaw config get agents.defaults.workspace)
+
+# Navigate
+cd $WORKSPACE
+
+# Create project
+mkdir new-project
+cd new-project
+
+# Initialize Spec-Kit
+specify init . --ai claude --force
+
+# Develop with Claude Code
+claude -p "Your task"
+
+# Continue session
+claude --continue
+```
+
+### File Locations
+
+| Purpose | Location |
+|---------|----------|
+| OpenClaw config | `~/.openclaw/openclaw.json` |
+| Claude settings | `~/.claude/settings.json` |
+| Debug logs | `~/.claude/debug/` |
+| Allowlist | `~/.openclaw/exec-approvals.json` |
+
+### Useful Aliases (Add to ~/.zshrc)
+
+```bash
+# Navigate to workspace
+alias cw='cd $(openclaw config get agents.defaults.workspace)'
+
+# Quick project
+alias np='cd $(openclaw config get agents.defaults.workspace) && mkdir -p new-project && cd new-project'
+
+# Server
+alias serve='python3 -m http.server 8080'
+
+# Claude Code
+alias cc='claude -p'
+```
+
+---
+
 ## Related Resources
 
-- [Claude Code Official Docs](https://code.claude.com/docs)
+- [Claude Code Docs](https://code.claude.com/docs)
+- [Spec-Kit GitHub](https://github.com/github/spec-kit)
+- [OpenClaw Docs](https://docs.openclaw.ai)
 - [CLI Reference](https://code.claude.com/docs/en/cli-reference)
-- [Quickstart Guide](https://code.claude.com/docs/en/quickstart)
-- [Subagents Documentation](https://code.claude.com/docs/en/sub-agents)
-- [MCP Servers](https://code.claude.com/docs/en/mcp)
+
+---
+
+**Last Updated:** 2026-02-06
+**Version:** 2.0.0
+**Author:** Claude Code + OpenClaw
