@@ -164,13 +164,17 @@ See **[SKILL.md](./SKILL.md)** for complete troubleshooting guide.
 - 🔗 [GitHub CLI Manual](https://cli.github.com/manual/gh)
 - 🔗 [Claude Code Docs](https://code.claude.com/docs)
 - 🔗 [Spec-Kit](https://github.com/github/spec-kit)
+- 🔗 [OpenSpec](https://github.com/Fission-AI/OpenSpec) - ⭐ Lighter alternative
+- 🔗 [OpenClaw Docs](https://docs.openclaw.ai)
+- 🔗 [Claude Code Docs](https://code.claude.com/docs)
+- 🔗 [Spec-Kit](https://github.com/github/spec-kit)
 - 🔗 [OpenClaw Docs](https://docs.openclaw.ai)
 
 ## Version
 
-- **Current:** 2.2.0
+- **Current:** 2.3.0
 - **Last Updated:** 2026-02-06
-- **Key Update:** Added GitHub CLI Reference section
+- **Key Update:** Added OpenSpec Alternative section
 - **Compatible with:** OpenClaw 2026.2.2+
 
 ---
