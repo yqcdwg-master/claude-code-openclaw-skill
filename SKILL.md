@@ -180,6 +180,140 @@ Spec-Kit is GitHub's toolkit for **Spec-Driven Development** - a methodology whe
 3. AI agents follow structured workflows
 4. Quality is ensured through checkpoints
 
+> 💡 **Alternative**: Consider using [OpenSpec](#openspec-alternative) for a lighter, more iterative approach.
+
+---
+
+## OpenSpec Alternative ⭐
+
+### Why OpenSpec?
+
+**OpenSpec** is a lighter, more iterative Spec-Driven Development tool:
+
+| Feature | OpenSpec | Spec Kit |
+|---------|----------|----------|
+| Setup | Lightweight | Heavyweight |
+| Phases | Iterative | Rigid gates |
+| Files | Minimal | Many Markdown |
+| Setup | npm install | Python + pip |
+| Brownfield | Excellent | Limited |
+| Speed | Fast | Slower |
+| Models | 20+ AI tools | Claude only |
+
+### Install OpenSpec
+
+```bash
+# Requires Node.js 20.19.0+
+npm install -g @fission-ai/openspec@latest
+```
+
+### Initialize Project
+
+```bash
+cd $(openclaw config get agents.defaults.workspace)
+cd your-project
+
+openspec init
+openspec update
+```
+
+### Quick Commands
+
+| Command | Description |
+|---------|------------|
+| `/opsx:new <feature>` | Create new feature proposal |
+| `/opsx:ff` | Fast-forward (generate all docs) |
+| `/opsx:apply` | Implement all tasks |
+| `/opsx:archive` | Archive completed feature |
+
+### Example Workflow
+
+```bash
+# Start new feature
+/opsx:new add dark mode
+
+# Generate all docs (proposal, specs, design, tasks)
+/opsx:ff
+
+# Implement all tasks
+/opsx:apply
+
+# Archive when done
+/opsx:archive
+```
+
+### Learn More
+
+- **GitHub**: https://github.com/Fission-AI/OpenSpec
+- **NPM**: https://www.npmjs.com/package/@fission-ai/openspec
+- **Skill**: See [`openspec-openclaw-skill`](../openspec-openclaw-skill/SKILL.md) for complete guide
+
+---
+
+## OpenSpec Alternative ⭐
+
+### Why OpenSpec?
+
+**OpenSpec** is a lighter, more iterative Spec-Driven Development tool:
+
+| Feature | OpenSpec | Spec Kit |
+|---------|----------|----------|
+| Setup | Lightweight | Heavyweight |
+| Phases | Iterative | Rigid gates |
+| Files | Minimal | Many Markdown |
+| Setup | npm install | Python + pip |
+| Brownfield | Excellent | Limited |
+| Speed | Fast | Slower |
+| Models | 20+ AI tools | Claude only |
+
+### Install OpenSpec
+
+```bash
+# Requires Node.js 20.19.0+
+npm install -g @fission-ai/openspec@latest
+```
+
+### Initialize Project
+
+```bash
+cd $(openclaw config get agents.defaults.workspace)
+cd your-project
+
+openspec init
+openspec update
+```
+
+### Quick Commands
+
+| Command | Description |
+|---------|------------|
+| `/opsx:new <feature>` | Create new feature proposal |
+| `/opsx:ff` | Fast-forward (generate all docs) |
+| `/opsx:apply` | Implement all tasks |
+| `/opsx:archive` | Archive completed feature |
+
+### Example Workflow
+
+```bash
+# Start new feature
+/opsx:new add dark mode
+
+# Generate all docs (proposal, specs, design, tasks)
+/opsx:ff
+
+# Implement all tasks
+/opsx:apply
+
+# Archive when done
+/opsx:archive
+```
+
+### Learn More
+
+- **GitHub**: https://github.com/Fission-AI/OpenSpec
+- **NPM**: https://www.npmjs.com/package/@fission-ai/openspec
+- **Skill**: See [`openspec-openclaw-skill`](../openspec-openclaw-skill/SKILL.md) for complete guide
+
 ### Workflow Overview
 
 ```
@@ -1555,5 +1689,5 @@ gh repo view --json
 ---
 
 **Last Updated:** 2026-02-06
-**Version:** 2.2.0 (Added GitHub CLI Reference section)
+**Version:** 2.3.0 (Added OpenSpec Alternative section)
 **Author:** Claude Code + OpenClaw
