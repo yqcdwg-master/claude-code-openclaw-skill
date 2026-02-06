@@ -8,6 +8,7 @@ A skill that provides complete documentation and best practices for using Claude
 
 - ✅ Complete workflow guide for Claude Code + Spec-Kit
 - ✅ Correct usage formats and examples
+- ✅ **NEW: Known Issues and Solutions** (2026-02-06)
 - ✅ Troubleshooting for common issues
 - ✅ Best practices and patterns
 - ✅ Configuration reference
@@ -66,45 +67,31 @@ claude -p "Your task" workdir:~/project
 bash pty:true command:"claude -p 'Task'"  # Wrong syntax!
 ```
 
-### Complete Documentation
-
-See **[SKILL.md](./SKILL.md)** for:
-- Detailed workflow guide
-- All parameters and options
-- Troubleshooting common issues
-- Advanced configurations
-- Real-world examples
-
-### What You'll Learn
-
-1. **Setup & Configuration**
-   - Workspace directory rules
-   - Environment variables
-   - Permission settings
-
-2. **Spec-Kit Integration**
-   - Structured development workflow
-   - From planning to implementation
-   - Quality checkpoints
-
-3. **Best Practices**
-   - Breaking down complex tasks
-   - Using read-only queries
-   - Verifying generated code
-
-4. **Troubleshooting**
-   - Claude Code not responding
-   - Permission denied errors
-   - Timeout issues
-   - Wrong model usage
-
-## Documentation Structure
+### Documentation Structure
 
 | Document | Purpose |
 |----------|---------|
 | **SKILL.md** | Complete guide (start here) |
 | **examples/QUICK_REFERENCE.md** | Command quick reference |
 | **examples/USAGE.sh** | Executable examples |
+
+## 📚 What's New (v2.1.0)
+
+### Known Issues and Solutions
+
+Added comprehensive section documenting real-world issues encountered during development:
+
+| Issue | Solution |
+|-------|-----------|
+| @types/react-swipeable version not found | Don't add @types if package includes its own |
+| Chakra UI Icons import failure | Use inline SVG components instead |
+| Template string syntax errors | Use double quotes, verify closures |
+| Vite + Ngrok host not allowed | Configure allowedHosts in vite.config.ts |
+| Incomplete file exports | Always verify files after writing |
+
+**See SKILL.md → "Known Issues and Solutions" for complete details.**
+
+---
 
 ## Examples
 
@@ -180,8 +167,9 @@ See **[SKILL.md](./SKILL.md)** for complete troubleshooting guide.
 
 ## Version
 
-- **Current:** 2.0.0
+- **Current:** 2.1.0
 - **Last Updated:** 2026-02-06
+- **Key Update:** Added "Known Issues and Solutions" section
 - **Compatible with:** OpenClaw 2026.2.2+
 
 ---

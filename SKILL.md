@@ -972,15 +972,239 @@ alias cc='claude -p'
 
 ---
 
+## Known Issues and Solutions
+
+This section documents real issues encountered during development with Claude Code + OpenClaw and their solutions.
+
+---
+
+### Issue 1: @types/react-swipeable Version Not Found
+
+**Error:**
+```
+npm error code ETARGET
+npm error notarget No matching version found for @types/react-swipeable@^7.0.6.
+```
+
+**Cause:** The specified version of @types/react-swipeable doesn't exist in npm registry.
+
+**Solution:**
+```json
+// package.json - devDependencies
+{
+  // ❌ Don't add @types for packages that include their own types
+  // "@types/react-swipeable": "^7.0.6",
+  
+  // ✅ Just use the main package - it includes type definitions
+  "react-swipeable": "^7.0.1"
+}
+```
+
+**Prevention:**
+- ✅ Check if a package includes its own type definitions before adding @types
+- ✅ Search available versions: `npm search @types/package-name`
+- ✅ Prefer packages that bundle their own types
+
+---
+
+### Issue 2: Chakra UI Icons Import Failure
+
+**Error:**
+```
+Uncaught SyntaxError: The requested module '/node_modules/.vite/deps/@chakra-ui_icons.js' 
+does not provide an export named 'SpeakerIcon'
+```
+
+**Cause:** @chakra-ui/icons has compatibility issues in newer versions.
+
+**Solution:**
+```typescript
+// ❌ Don't import from @chakra-ui/icons (may fail)
+import { SpeakerIcon, StarIcon, CheckIcon } from '@chakra-ui/icons';
+
+// ✅ Use inline SVG components instead
+const SpeakerIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" {...props}>
+    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+    <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+  </svg>
+);
+```
+
+**Prevention:**
+- ✅ Use Chakra UI's built-in components when possible
+- ✅ For simple icons, inline SVGs are more reliable
+- ✅ Create a centralized icons component library for reusable icons
+
+---
+
+### Issue 3: Template String Syntax Errors
+
+**Error Examples:**
+```typescript
+// ❌ Wrong - escaping single quotes in template
+definition: 'To find one\'s way across an area',
+
+// ❌ Wrong - unclosed template string
+w={`${Math.min(100, (stats.wordsLearned / Math.max(1, stats.wordsLearned))}%`}
+```
+
+**Solution:**
+```typescript
+// ✅ Use double quotes for strings with single quotes
+definition: "To find one's way across an area",
+
+// ✅ Ensure template strings are properly closed
+w={`${Math.min(100, (stats.wordsLearned / Math.max(1, stats.wordsLearned))}%`}
+```
+
+**Debug Commands:**
+```bash
+# Check specific line numbers
+sed -n '100,110p' filename
+
+# Check for invisible characters
+sed -n '行号p' 文件名 | od -c
+
+# Verify file completeness
+tail -20 filename
+```
+
+**Prevention:**
+- ✅ Use IDE syntax highlighting and linting
+- ✅ Use double quotes for strings containing apostrophes
+- ✅ Ensure template string `${}` is properly closed
+- ✅ Run ESLint before committing
+
+---
+
+### Issue 4: Vite + Ngrok Host Not Allowed
+
+**Error:**
+```
+Blocked request. This host ("xxx.ngrok-free.dev") is not allowed. 
+To allow this host, add "xxx.ngrok-free.dev" to server.allowedHosts in vite.config.js.
+```
+
+**Solution:**
+```typescript
+// vite.config.ts
+export default defineConfig({
+  plugins: [react()],
+  server: {
+    port: 3000,
+    host: true,
+    allowedHosts: [
+      'althea-lanceted-floridly.ngrok-free.dev', // Specific domain
+      'true' // Or allow all hosts
+    ]
+  }
+});
+```
+
+**Better Solution (Auto-detect ngrok):**
+```typescript
+import { readFileSync } from 'fs';
+
+const ngrokLog = readFileSync('/tmp/ngrok.log', 'utf-8');
+const ngrokUrl = ngrokLog.match(/https:\/\/[^\s]+/)?.[0];
+const ngrokHost = ngrokUrl ? new URL(ngrokUrl).hostname : 'true';
+
+export default defineConfig({
+  server: {
+    allowedHosts: [ngrokHost]
+  }
+});
+```
+
+**Prevention:**
+- ✅ Always set `host: true` in Vite config
+- ✅ Configure allowedHosts when using ngrok
+- ✅ Create a startup script that auto-updates Vite config
+
+---
+
+### Issue 5: Incomplete File Exports
+
+**Error:**
+```
+The requested module does not provide an export named 'WordCard'
+```
+
+**Cause:** File write operation was interrupted, leaving incomplete exports.
+
+**Solution:**
+```bash
+# Always verify files after writing
+tail -20 filename
+
+# If incomplete, rewrite the complete file
+```
+
+**Prevention:**
+- ✅ Always verify file completeness after write operations
+- ✅ Check for proper export statements at file end
+- ✅ Use version control to track file changes
+- ✅ Break large files into smaller modules
+
+---
+
+## Quick Reference Card
+
+### ✅ DO's (Recommended)
+- Use double quotes for strings containing apostrophes
+- Verify file completeness after writing
+- Use inline SVGs for reliable icons
+- Configure Vite allowedHosts for ngrok
+- Use packages with built-in type definitions
+
+### ❌ DON'Ts (Avoid)
+- Don't add @types packages without checking
+- Don't escape single quotes in template strings
+- Don't assume file writes are always complete
+- Don't skip Vite config for ngrok
+- Don't use deprecated or incompatible packages
+
+---
+
+## Common Debugging Commands
+
+```bash
+# Check file end
+tail -20 filename
+
+# Check specific lines
+sed -n '100,110p' filename
+
+# Check invisible characters
+sed -n '行号p' 文件名 | od -c
+
+# Restart Vite server
+pkill -f vite
+npm run dev
+
+# Check port usage
+lsof -i :3000
+
+# Check ngrok status
+cat /tmp/ngrok.log
+
+# Get ngrok URL
+grep -o "https://[^[:space:]]*" /tmp/ngrok.log | head -1
+```
+
+---
+
 ## Related Resources
 
 - [Claude Code Docs](https://code.claude.com/docs)
 - [Spec-Kit GitHub](https://github.com/github/spec-kit)
 - [OpenClaw Docs](https://docs.openclaw.ai)
 - [CLI Reference](https://code.claude.com/docs/en/cli-reference)
+- [Vite Config](https://vitejs.dev/config/)
 
 ---
 
 **Last Updated:** 2026-02-06
-**Version:** 2.0.0
+**Version:** 2.1.0 (Added Known Issues section)
 **Author:** Claude Code + OpenClaw
