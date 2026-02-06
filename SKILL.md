@@ -1167,6 +1167,349 @@ tail -20 filename
 
 ---
 
+## GitHub CLI Reference
+
+GitHub CLI (`gh`) is essential for managing repositories, issues, and pull requests directly from the command line.
+
+**Official Documentation:** https://cli.github.com/manual/gh
+
+---
+
+### Installation and Authentication
+
+**Install GitHub CLI:**
+```bash
+# macOS
+brew install gh
+
+# Linux (Debian/Ubuntu)
+sudo apt install gh
+
+# Windows
+winget install GitHub.cli
+```
+
+**Authenticate:**
+```bash
+# Interactive login (opens browser)
+gh auth login
+
+# Check authentication status
+gh auth status
+```
+
+---
+
+### Core Commands
+
+| Command | Description | Example |
+|---------|-------------|---------|
+| `gh auth` | Manage authentication | `gh auth login`, `gh auth status` |
+| `gh repo` | Manage repositories | `gh repo create`, `gh repo clone` |
+| `gh issue` | Manage issues | `gh issue create`, `gh issue list` |
+| `gh pr` | Manage pull requests | `gh pr create`, `gh pr checkout` |
+| `gh browse` | Open repository in browser | `gh repo view --web` |
+| `gh api` | Make API requests | `gh api repos` |
+
+---
+
+### Repository Management
+
+**Create a new repository:**
+```bash
+# Interactive mode
+gh repo create
+
+# Non-interactive (with name, public)
+gh repo create my-project --public --description "My project description"
+
+# Create from existing local directory
+gh repo create my-project --private --source=. --remote=origin
+
+# Create and clone
+gh repo create my-project --public --clone
+
+# Create with all options
+gh repo create my-project \
+  --public \
+  --description "Project description" \
+  --gitignore Node \
+  --license MIT \
+  --clone
+```
+
+**Clone a repository:**
+```bash
+# Clone by name (requires authenticated user)
+gh repo clone username/repository
+
+# Clone with full URL
+gh repo clone https://github.com/username/repository.git
+
+# Clone specific branch
+gh repo clone username/repo -- -b branch-name
+```
+
+**View repository:**
+```bash
+# View in terminal
+gh repo view
+
+# Open in browser
+gh repo view --web
+
+# View with extended info
+gh repo view --repo username/repo --json name,description,url
+```
+
+**List repositories:**
+```bash
+# List your repositories
+gh repo list
+
+# List with limit
+gh repo list --limit 50
+
+# List organization repositories
+gh repo list org-name
+```
+
+**Sync repository:**
+```bash
+# Sync with remote
+gh repo sync
+
+# Sync specific branch
+gh repo sync --branch main
+```
+
+---
+
+### Issue Management
+
+**Create an issue:**
+```bash
+# Interactive mode
+gh issue create
+
+# Non-interactive
+gh issue create \
+  --title "Bug in login feature" \
+  --body "Description of the bug" \
+  --label bug
+
+# With assignee
+gh issue create --title "Feature request" --assignee username
+```
+
+**List issues:**
+```bash
+# List open issues
+gh issue list
+
+# List with filters
+gh issue list --state all --limit 20
+
+# List by label
+gh issue list --label "bug"
+```
+
+**View issue:**
+```bash
+# View in terminal
+gh issue view 123
+
+# Open in browser
+gh issue view 123 --web
+```
+
+**Close/reopen issue:**
+```bash
+gh issue close 123
+gh issue reopen 123
+```
+
+---
+
+### Pull Request Management
+
+**Create a PR:**
+```bash
+# Interactive mode
+gh pr create
+
+# Non-interactive
+gh pr create \
+  --title "Add new feature" \
+  --body "Description of changes" \
+  --base main
+
+# Create from current branch
+gh pr create --head feature-branch
+```
+
+**Checkout PR:**
+```bash
+# Checkout PR locally
+gh pr checkout 123
+
+# Checkout by branch name
+gh pr checkout username:feature-branch
+```
+
+**View PR:**
+```bash
+# View in terminal
+gh pr view 123
+
+# View checks status
+gh pr view 123 --checks
+
+# Open in browser
+gh pr view 123 --web
+```
+
+**Merge PR:**
+```bash
+# Merge PR
+gh pr merge 123
+
+# Squash and merge
+gh pr merge 123 --squash
+
+# Merge with message
+gh pr merge 123 --body "Merged by GitHub CLI"
+```
+
+**List PRs:**
+```bash
+# List open PRs
+gh pr list
+
+# List all PRs
+gh pr list --state all
+```
+
+---
+
+### GitHub API
+
+**Make API requests:**
+```bash
+# Get repository info
+gh api repos/username/repo
+
+# List issues
+gh api repos/username/repo/issues
+
+# Create issue via API
+gh api repos/username/repo/issues \
+  -f title="Issue title" \
+  -f body="Issue description"
+
+# Use pagination
+gh api repos/username/repo/issues?per_page=100
+```
+
+**API with authentication:**
+```bash
+# Uses authenticated token automatically
+gh api user
+
+# Custom headers
+gh api repos/username/repo -H "Accept: application/vnd.github.v3+json"
+```
+
+---
+
+### Useful Aliases
+
+Add these to your `~/.config/gh/config.yml`:
+
+```yaml
+aliases:
+  co: pr checkout
+  ci: issue create
+  cl: repo clone
+  status: repo view --json status
+  cleanup: "!git branch --merged | grep -v '\\*\\|main\\|master' | xargs -n 1 git branch -d"
+```
+
+Or create shell aliases:
+```bash
+# ~/.zshrc or ~/.bashrc
+alias ghstatus='gh repo view --json status'
+alias ghmyrepos='gh repo list --limit 20'
+alias ghnewissue='gh issue create --title'
+```
+
+---
+
+### Automation Examples
+
+**Create issue from script:**
+```bash
+#!/bin/bash
+# Create issue with environment variables
+gh issue create \
+  --title "Build failed: $BUILD_NUMBER" \
+  --body "Build failed on $DATE" \
+  --label bug,CI
+
+# Check for duplicate issue
+if gh issue list --search "Build failed" --state open | grep -q .; then
+  echo "Issue already exists"
+else
+  gh issue create --title "Build failed" --body "..."
+fi
+```
+
+**Sync fork workflow:**
+```bash
+# Sync fork with upstream
+gh repo sync username/fork --base owner/upstream --branch main
+
+# Create PR from fork
+gh pr create --title "Sync with upstream" --body "Updated from upstream"
+```
+
+---
+
+### Troubleshooting
+
+**Authentication issues:**
+```bash
+# Check status
+gh auth status
+
+# Refresh token
+gh auth refresh
+
+# Logout and login again
+gh auth logout
+gh auth login
+```
+
+**Permission denied:**
+```bash
+# Check repo access
+gh api user/repos --jq '.[].permissions | keys'
+
+# Verify scopes
+gh auth status --show-token
+```
+
+**Rate limiting:**
+```bash
+# Check rate limit
+gh api rate_limit
+
+# Authenticated requests have higher limits
+gh auth login
+```
+
+---
+
 ## Common Debugging Commands
 
 ```bash
@@ -1191,6 +1534,12 @@ cat /tmp/ngrok.log
 
 # Get ngrok URL
 grep -o "https://[^[:space:]]*" /tmp/ngrok.log | head -1
+
+# GitHub CLI status
+gh auth status
+
+# GitHub repo info
+gh repo view --json
 ```
 
 ---
@@ -1206,5 +1555,5 @@ grep -o "https://[^[:space:]]*" /tmp/ngrok.log | head -1
 ---
 
 **Last Updated:** 2026-02-06
-**Version:** 2.1.0 (Added Known Issues section)
+**Version:** 2.2.0 (Added GitHub CLI Reference section)
 **Author:** Claude Code + OpenClaw

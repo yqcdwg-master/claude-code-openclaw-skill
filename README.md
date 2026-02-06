@@ -161,15 +161,16 @@ See **[SKILL.md](./SKILL.md)** for complete troubleshooting guide.
 - 📖 **[SKILL.md](./SKILL.md)** - Complete documentation
 - 📝 **[examples/QUICK_REFERENCE.md](./examples/QUICK_REFERENCE.md)** - Command reference
 - 💻 **[examples/USAGE.sh](./examples/USAGE.sh)** - Executable examples
+- 🔗 [GitHub CLI Manual](https://cli.github.com/manual/gh)
 - 🔗 [Claude Code Docs](https://code.claude.com/docs)
 - 🔗 [Spec-Kit](https://github.com/github/spec-kit)
 - 🔗 [OpenClaw Docs](https://docs.openclaw.ai)
 
 ## Version
 
-- **Current:** 2.1.0
+- **Current:** 2.2.0
 - **Last Updated:** 2026-02-06
-- **Key Update:** Added "Known Issues and Solutions" section
+- **Key Update:** Added GitHub CLI Reference section
 - **Compatible with:** OpenClaw 2026.2.2+
 
 ---
